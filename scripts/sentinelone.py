@@ -1,4 +1,4 @@
-#!/usr/local/munki/munki-python
+#!/usr/local/munkireport/munkireport-python3
 '''Gathers information from SentintelOne sentinelctl binary. Calls once for
 each sub-category ("filter") to avoid a ton of processing overhead - there
 is no structured data format available here anymore.'''
