@@ -1,4 +1,4 @@
-#!/usr/local/munkireport/munkireport-python2
+#!/usr/local/munki/munki-python
 '''Gathers information from SentintelOne sentinelctl binary. Calls once for
 each sub-category ("filter") to avoid a ton of processing overhead - there
 is no structured data format available here anymore.'''
@@ -6,7 +6,8 @@ is no structured data format available here anymore.'''
 import subprocess
 import sys
 import os
-import dateutil.parser as dp
+# import dateutil.parser as dp # Not included in munki-python
+
 sys.path.insert(0, '/usr/local/munki')
 sys.path.insert(0, '/usr/local/munkireport')
 
@@ -24,23 +25,20 @@ def get_status_data(s1_filter):
         sp = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = sp.communicate()
         if sp.returncode != 0:
-            print("Error trying to execute status with filter %s: %s" % (s1_filter, err))
+            print(("Error trying to execute status with filter %s: %s" % (s1_filter, err)))
             sys.exit(1)
         else:
             # Strip out the line containing the filter name, then map to dict. Skip last line
             # as sentinelctl currently puts a blank newline at the end which breaks the map.
             out = str(''.join(out.decode('UTF-8').splitlines(True)[1:]))
-            return dict(map(lambda s : map(str.strip, s.split(':', 1)), out.split('\n')[:-1]))
+            return dict([list(map(str.strip, s.split(':', 1))) for s in out.split('\n')[:-1]])
     else:
         print("sentinelctl binary is missing - exiting")
         sys.exit(1)
 
 
 def main():
-    '''main function'''
-    cachedir = '%s/cache' % os.path.dirname(os.path.realpath(__file__))
-    if not os.path.exists(cachedir):
-        os.makedirs(cachedir)
+    """Main"""
 
     agent_data = get_status_data("Agent")
     mgmt_data = get_status_data("Management")
@@ -68,10 +66,11 @@ def main():
     # Rest of values can be sent relatively cleanly
     result.update({'agent-version': agent_data['Version']})
     result.update({'agent-id': agent_data['ID']})
-    result.update({'last-seen': dp.parse(mgmt_data['Last Seen']).strftime('%s')})
+    # result.update({'last-seen': dp.parse(mgmt_data['Last Seen']).strftime('%s')}) # dateutil not in munki-python
     result.update({'mgmt-url': mgmt_data['Server']})
 
     # Write results of checks to cache file
+    cachedir = '%s/cache' % os.path.dirname(os.path.realpath(__file__))
     output_plist = os.path.join(cachedir, 'sentinelone.plist')
     FoundationPlist.writePlist(result, output_plist)
 
