@@ -111,6 +111,8 @@ class Sentinelone_model extends \Model
         $out = array();
         $sql = "SELECT agent_version AS label, COUNT(1) AS count
                 FROM sentinelone
+                LEFT JOIN reportdata USING(serial_number)
+                ".get_machine_group_filter()."
                 GROUP BY agent_version
                 ORDER BY COUNT DESC";
     
@@ -128,6 +130,8 @@ class Sentinelone_model extends \Model
         $out = array();
         $sql = "SELECT mgmt_url AS label, COUNT(1) AS count
                 FROM sentinelone
+                LEFT JOIN reportdata USING(serial_number)
+                ".get_machine_group_filter()."
                 GROUP BY mgmt_url
                 ORDER BY COUNT DESC";
     
