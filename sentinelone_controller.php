@@ -59,8 +59,14 @@ class Sentinelone_controller extends Module_controller
         }
                 $active_threats = new Sentinelone_model;
 
-                $out = array();
-                $out['stats'] = $active_threats->get_active_threats_stats();
+		$out = array();
+		foreach ($active_threats->get_active_threats_stats() as $key => $value) {
+			$results = array(
+				"label" => $key,
+				"count" => $value,
+			);
+			array_push($out, $results);
+		}
 
 
         $obj->view('json', array('msg' => $out));
@@ -82,8 +88,14 @@ class Sentinelone_controller extends Module_controller
         }
                 $agent_running = new Sentinelone_model;
 
-                $out = array();
-                $out['stats'] = $agent_running->get_agent_running_stats();
+		$out = array();
+		foreach ($agent_running->get_agent_running_stats() as $key => $value) {
+			$results = array(
+				"label" => $key,
+				"count" => $value,
+			);
+			array_push($out, $results);
+		}
 
 
            $obj->view('json', array('msg' => $out));
@@ -105,8 +117,14 @@ class Sentinelone_controller extends Module_controller
         }
                 $self_protection= new Sentinelone_model;
 
-                $out = array();
-                $out['stats'] = $self_protection->get_self_protection_stats();
+		$out = array();
+		foreach ($self_protection->get_self_protection_stats() as $key => $value) {
+			$results = array(
+				"label" => $key,
+				"count" => $value,
+			);
+			array_push($out, $results);
+		}
 
 
         $obj->view('json', array('msg' => $out));
@@ -128,8 +146,14 @@ class Sentinelone_controller extends Module_controller
         }
                 $enforcing_security= new Sentinelone_model;
 
-                $out = array();
-                $out['stats'] = $enforcing_security->get_enforcing_security_stats();
+		$out = array();
+		foreach ($enforcing_security->get_enforcing_security_stats() as $key => $value) {
+			$results = array(
+				"label" => $key,
+				"count" => $value,
+			);
+			array_push($out, $results);
+		}
 
 
         $obj->view('json', array('msg' => $out));
@@ -148,6 +172,17 @@ class Sentinelone_controller extends Module_controller
         $obj->view('json', array('msg' => $version->get_versions()));
     }    
 
+    public function get_versions_graph()
+    {
+        if (! $this->authorized()) {
+            $obj->view('json', array('msg' => array('error' => 'Not authenticated')));
+            return;
+        }
+
+        $version= new Sentinelone_model;
+        $obj->view('json', array('msg' => $version->get_versions_graph()));
+    }
+    
     public function get_mgmt_url()
     {
         $obj = new View();

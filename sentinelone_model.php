@@ -58,7 +58,7 @@ class Sentinelone_model extends \Model
                     $this->$item = $plist[$search];
                 }
             } else {
-                $this->$item = '';
+                $this->$item = null;
             }
         }
         $this->id = '';
@@ -109,14 +109,16 @@ class Sentinelone_model extends \Model
      public function get_versions()
      {
         $out = array();
-        $sql = "SELECT agent_version, COUNT(1) AS count
+        $sql = "SELECT agent_version AS label, COUNT(1) AS count
                 FROM sentinelone
+                LEFT JOIN reportdata USING(serial_number)
+                ".get_machine_group_filter()."
                 GROUP BY agent_version
                 ORDER BY COUNT DESC";
     
         foreach ($this->query($sql) as $obj) {
             if ("$obj->count" !== "0") {
-                $obj->agent_version = $obj->agent_version ? $obj->agent_version : 'Unknown';
+                $obj->label = $obj->label ? $obj->label : 'Unknown';
                 $out[] = $obj;
             }
         }
@@ -126,18 +128,38 @@ class Sentinelone_model extends \Model
      public function get_mgmt_url()
      {
         $out = array();
-        $sql = "SELECT mgmt_url, COUNT(1) AS count
+        $sql = "SELECT mgmt_url AS label, COUNT(1) AS count
                 FROM sentinelone
+                LEFT JOIN reportdata USING(serial_number)
+                ".get_machine_group_filter()."
                 GROUP BY mgmt_url
                 ORDER BY COUNT DESC";
     
         foreach ($this->query($sql) as $obj) {
             if ("$obj->count" !== "0") {
-                $obj->mgmt_url = $obj->mgmt_url ? $obj->mgmt_url : 'Unknown';
+                $obj->label = $obj->label ? $obj->label : 'Unknown';
                 $out[] = $obj;
             }
         }
         return $out;
+     }
+
+     public function get_versions_graph()
+     {
+         $out = array();
+         $sql = "SELECT count(1) as count, agent_version
+                 FROM sentinelone
+                 LEFT JOIN reportdata USING (serial_number)
+                 ".get_machine_group_filter()."
+                 GROUP BY agent_version
+                 ORDER BY agent_version DESC";
+
+         foreach ($version->query($sql) as $obj) {
+            $obj->agent_version = $obj->agent_version ? $obj->agent_version : '0';
+            $out[] = array('label' => $obj->agent_version, 'count' => intval($obj->count));
+         }
+
+         return $out;
      }
 
 }

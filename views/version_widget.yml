@@ -1,0 +1,9 @@
+type: scrollbox
+widget_id: version-widget
+api_url: /module/sentinelone/get_versions_graph
+i18n_title: sentinelone.agent_version
+icon: fa-code
+listing_link: /show/listing/sentinelone/sentinelone
+search_key: label
+badge: count
+i18n_empty_result: no_data

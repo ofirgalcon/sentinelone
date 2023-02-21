@@ -1,4 +1,6 @@
+
 #!/usr/local/munkireport/munkireport-python3
+
 '''Gathers information from SentintelOne sentinelctl binary. Calls once for
 each sub-category ("filter") to avoid a ton of processing overhead - there
 is no structured data format available here anymore.'''
@@ -14,7 +16,6 @@ sys.path.insert(0, '/usr/local/munkireport')
 from munkilib import FoundationPlist
 #pylint: disable=C0103
 #pylint: disable=C0301
-
 
 def get_status_data(s1_filter):
     '''Runs the status command with the specified filter string'''
@@ -71,6 +72,7 @@ def main():
 
     # Write results of checks to cache file
     cachedir = '%s/cache' % os.path.dirname(os.path.realpath(__file__))
+
     output_plist = os.path.join(cachedir, 'sentinelone.plist')
     FoundationPlist.writePlist(result, output_plist)
 

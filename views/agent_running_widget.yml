@@ -1,0 +1,9 @@
+type: button
+widget_id: agent-running-widget
+api_url: /module/sentinelone/get_agent_running_stats
+i18n_title: sentinelone.agent_running
+listing_link: /show/listing/sentinelone/sentinelone
+icon: fa-check-circle
+buttons:
+        - { label: not_running, class: btn-danger, i18n_label: sentinelone.not_running, search_component: "not_running", hide_when_zero: false }
+        - { label: running, class: btn-success, i18n_label: sentinelone.running, search_component: "running", hide_when_zero: false }

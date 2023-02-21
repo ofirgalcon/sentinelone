@@ -1,0 +1,9 @@
+type: scrollbox
+widget_id: mgmt-url-widget
+api_url: /module/sentinelone/get_mgmt_url
+i18n_title: sentinelone.mgmt_url
+icon: fa-compass
+listing_link: /show/listing/sentinelone/sentinelone
+search_key: label
+badge: count
+i18n_empty_result: no_data
