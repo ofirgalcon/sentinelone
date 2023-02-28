@@ -1,0 +1,9 @@
+type: button
+widget_id: self-protection-widget
+api_url: /module/sentinelone/get_self_protection_stats
+i18n_title: sentinelone.self_protection
+listing_link: /show/listing/sentinelone/sentinelone
+icon: fa-shield
+buttons:
+        - { label: not_self_protected, class: btn-danger, i18n_label: sentinelone.disabled, search_component: "not_self_protected", hide_when_zero: false }
+        - { label: self_protected, class: btn-success, i18n_label: sentinelone.enabled, search_component: "self_protected", hide_when_zero: false }

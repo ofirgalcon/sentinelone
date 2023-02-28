@@ -1,0 +1,9 @@
+type: button
+widget_id: active-threats-widget
+api_url: /module/sentinelone/get_active_threats_stats
+i18n_title: sentinelone.active_threats
+listing_link: /show/listing/sentinelone/sentinelone
+icon: fa-meh-o
+buttons:
+  - { label: threats_present, class: btn-danger, i18n_label: sentinelone.threats_present, search_component: "threats_present", hide_when_zero: false }
+  - { label: threats_not_present, class: btn-success, i18n_label: sentinelone.no_active_threats, search_component: "threats_not_present", hide_when_zero: false }

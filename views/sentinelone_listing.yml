@@ -1,0 +1,31 @@
+i18n_title: sentinelone.report
+table:
+  - column: machine.computer_name
+    i18n_header: listing.computername
+    formatter: clientDetail
+    tab_link: sentinelone
+  - column: reportdata.serial_number
+    i18n_header: serial
+  - column: reportdata.long_username
+    i18n_header: username
+  - column: sentinelone.agent_running
+    i18n_header: sentinelone.agent_running
+    formatter: binaryYesNo
+  - column: sentinelone.active_threats_present
+    i18n_header: sentinelone.active_threats
+    formatter: binaryYesNo
+  - column: sentinelone.self_protection_enabled
+    i18n_header: sentinelone.self_protection_enabled
+    formatter: binaryYesNo
+  - column: sentinelone.enforcing_security
+    i18n_header: sentinelone.enforcing_security
+    formatter: binaryYesNo
+  - column: sentinelone.agent_version
+    i18n_header: sentinelone.agent_version
+  - column: sentinelone.mgmt_url
+    i18n_header: sentinelone.mgmt_url
+  - column: sentinelone.agent_id
+    i18n_header: sentinelone.agent_id
+  - column: sentinelone.last_seen
+    i18n_header: sentinelone.last_seen
+    formatter: timestampToMoment

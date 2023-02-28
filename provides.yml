@@ -1,0 +1,18 @@
+client_tabs:
+        sentinelone:
+                view: sentinelone_client_tab
+                i18n: sentinelone.client_tab
+listings:
+        sentinelone:
+                view: sentinelone_listing
+                i18n: sentinelone.sentinelone
+reports:
+        sentinelone: { view: sentinelone_report, i18n: sentinelone.report }
+widgets:
+        agent_running: { view: agent_running_widget }
+        active_threats: { view: active_threats_widget }
+        enforcing_security: { view: enforcing_security_widget }
+        self_protection: { view: self_protection_widget }
+        version: { view: version_widget }
+        version_graph: { view: version_graph_widget }
+        mgmt_url: { view:  mgmt_url_widget }

@@ -1,0 +1,9 @@
+type: button
+widget_id: enforcing-security-widget
+api_url: /module/sentinelone/get_enforcing_security_stats
+i18n_title: sentinelone.enforcing_security
+listing_link: /show/listing/sentinelone/sentinelone
+icon: fa-shield
+buttons:
+        - { label: not_enforced, class: btn-danger, i18n_label: sentinelone.not_enforced, search_component: "not_enforced", hide_when_zero: false }
+        - { label: enforced, class: btn-success, i18n_label: sentinelone.enforced, search_component: "enforced", hide_when_zero: false }

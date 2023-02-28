@@ -1,0 +1,8 @@
+type: bargraph
+widget_id: version-graph-widget
+api_url: /module/sentinelone/get_versions
+i18n_title: sentinelone.agent_version
+icon: fa-code
+listing_link: /show/listing/sentinelone/sentinelone
+label_modifier: mr.integerToVersion(label)
+search_component: e.data.label
