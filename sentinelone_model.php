@@ -154,7 +154,7 @@ class Sentinelone_model extends \Model
                  GROUP BY agent_version
                  ORDER BY agent_version DESC";
 
-         foreach ($version->query($sql) as $obj) {
+         foreach ($this->query($sql) as $obj) {
             $obj->agent_version = $obj->agent_version ? $obj->agent_version : '0';
             $out[] = array('label' => $obj->agent_version, 'count' => intval($obj->count));
          }
@@ -163,5 +163,3 @@ class Sentinelone_model extends \Model
      }
 
 }
-
-
