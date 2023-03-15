@@ -1,6 +1,6 @@
 <?php
 /**
- * Security module class
+ * sentinelone module class
  *
  * @package munkireport
  * @author
@@ -174,6 +174,8 @@ class Sentinelone_controller extends Module_controller
 
     public function get_versions_graph()
     {
+        $obj = new View();
+
         if (! $this->authorized()) {
             $obj->view('json', array('msg' => array('error' => 'Not authenticated')));
             return;
@@ -196,4 +198,4 @@ class Sentinelone_controller extends Module_controller
         $obj->view('json', array('msg' => $mgmt_url->get_mgmt_url()));
     }    
 
-} // END class default_module
+} // END class sentinelone_module
