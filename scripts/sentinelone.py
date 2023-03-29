@@ -1,4 +1,3 @@
-
 #!/usr/local/munkireport/munkireport-python3
 
 '''Gathers information from SentintelOne sentinelctl binary. Calls once for
