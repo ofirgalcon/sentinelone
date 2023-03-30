@@ -1,10 +1,9 @@
 row1:
         agent_running:
         active_threats:
-row2:
         enforcing_security:
+row2:
         self_protection:
+        mgmt_url:
 row3:
         version_graph:
-row4:
-        mgmt_url:
