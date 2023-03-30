@@ -1,4 +1,5 @@
 i18n_title: sentinelone.report
+js_link: module/sentinelone/js/sentinelone
 table:
   - column: machine.computer_name
     i18n_header: listing.computername
@@ -11,15 +12,19 @@ table:
   - column: sentinelone.agent_running
     i18n_header: sentinelone.agent_running
     formatter: binaryYesNo
+    filter: agent_running
   - column: sentinelone.active_threats_present
     i18n_header: sentinelone.active_threats
     formatter: binaryYesNo
+    filter: active_threats
   - column: sentinelone.self_protection_enabled
     i18n_header: sentinelone.self_protection_enabled
     formatter: binaryYesNo
+    filter: self_protection_enabled
   - column: sentinelone.enforcing_security
     i18n_header: sentinelone.enforcing_security
     formatter: binaryYesNo
+    filter: enforcing_security
   - column: sentinelone.agent_version
     i18n_header: sentinelone.agent_version
   - column: sentinelone.mgmt_url
