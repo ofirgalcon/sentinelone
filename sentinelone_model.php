@@ -17,12 +17,22 @@ class Sentinelone_model extends \Model
         $this->rs['last_seen'] = '';
         $this->rs['mgmt_url'] = '';
         $this->rs['self_protection_enabled'] = 0; //boolean
+        $this->rs['agent_install_time'] = '';
+        $this->rs['agent_operational_state'] = 0; //boolean
+        $this->rs['remote_profiler'] = 0; //boolean
+        $this->rs['network_monitoring'] = 0; //boolean
+        $this->rs['network_extension'] = 0; //boolean
+        $this->rs['content_filter'] = 0; //boolean
+        $this->rs['network_quarantine'] = 0; //boolean
+        $this->rs['compatible_os'] = 0; //boolean
+        $this->rs['site_key'] = '';
+        $this->rs['connected'] = 0; //boolean
        
         if ($serial) {
             $this->retrieve_record($serial);
         } 
         
-    $this->serial_number = $serial;
+        $this->serial_number = $serial;
     }
     
     
@@ -34,8 +44,8 @@ class Sentinelone_model extends \Model
         $parser->parse($data, CFPropertyList::FORMAT_XML);
         $plist = $parser->toArray();
 
-    // Delete previous set        
-    $this->deleteWhere('serial_number=?', $this->serial_number);
+        // Delete previous set        
+        $this->deleteWhere('serial_number=?', $this->serial_number);
 
         $translate = array(
           'active-threats-present' => 'active_threats_present',
@@ -45,7 +55,17 @@ class Sentinelone_model extends \Model
           'enforcing-security' => 'enforcing_security',
           'last-seen' => 'last_seen',
           'mgmt-url' => 'mgmt_url',
-          'self-protection-enabled' => 'self_protection_enabled'
+          'self-protection-enabled' => 'self_protection_enabled',
+          'agent-install-time' => 'agent_install_time',
+          'agent-operational-state' => 'agent_operational_state',
+          'remote-profiler' => 'remote_profiler',
+          'network-monitoring' => 'network_monitoring',
+          'network-extension' => 'network_extension',
+          'content-filter' => 'content_filter',
+          'network-quarantine' => 'network_quarantine',
+          'compatible-os' => 'compatible_os',
+          'site-key' => 'site_key',
+          'connected' => 'connected'
         );
 
         foreach ($translate as $search => $item) {
@@ -58,9 +78,10 @@ class Sentinelone_model extends \Model
                     $this->$item = $plist[$search];
                 }
             } else {
-                $this->$item = null;
+                $this->$item = '';
             }
         }
+
         $this->id = '';
         $this->save();
     }

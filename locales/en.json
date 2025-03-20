@@ -22,5 +22,14 @@
     "self_protection": "Self Protection",
     "sentinelone": "SentinelOne",
     "threats_present": "Threats Present",
-    "active_threats": "Active Threats"
+    "active_threats": "Active Threats",
+    "agent_operational_state": "Agent Operational State",
+    "remote_profiler": "Remote Profiler",
+    "network_monitoring": "Network Monitoring",
+    "network_extension": "Network Extension",
+    "content_filter": "Content Filter",
+    "network_quarantine": "Network Quarantine",
+    "compatible_os": "Compatible OS",
+    "site_key": "Site Key",
+    "connected": "Connected"
 }

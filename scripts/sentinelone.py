@@ -7,7 +7,8 @@ is no structured data format available here anymore.'''
 import subprocess
 import sys
 import os
-# import dateutil.parser as dp # Not included in munki-python
+from datetime import datetime
+from typing import Dict, Optional, List, Tuple
 
 sys.path.insert(0, '/usr/local/munki')
 sys.path.insert(0, '/usr/local/munkireport')
@@ -16,64 +17,152 @@ from munkilib import FoundationPlist
 #pylint: disable=C0103
 #pylint: disable=C0301
 
-def get_status_data(s1_filter):
-    '''Runs the status command with the specified filter string'''
-    s1_binary = '/Library/Sentinel/sentinel-agent.bundle/Contents/MacOS/sentinelctl'
+# Constants
+SENTINEL_BINARY = '/Library/Sentinel/sentinel-agent.bundle/Contents/MacOS/sentinelctl'
+CACHE_SUBPATH = 'cache'
+OUTPUT_FILENAME = 'sentinelone.plist'
 
-    if os.path.isfile(s1_binary):
-        cmd = [s1_binary, 'status', '--filters', s1_filter]
+def parse_status_output(output: str) -> Dict[str, str]:
+    """Parse the status output into a dictionary.
+    
+    Args:
+        output: Raw output string from sentinelctl
+        
+    Returns:
+        Dictionary of key-value pairs
+    """
+    result = {}
+    for line in output.split('\n'):
+        if not line.strip():
+            continue
+        try:
+            key, value = line.split(':', 1)
+            result[key.strip()] = value.strip()
+        except ValueError:
+            # Skip lines that don't contain a colon
+            continue
+    return result
+
+def get_status_data(s1_filter: str) -> Optional[Dict[str, str]]:
+    '''Runs the status command with the specified filter string
+    
+    Args:
+        s1_filter: Filter string to pass to sentinelctl
+        
+    Returns:
+        Dictionary of status data or None if there was an error
+    '''
+    if not os.path.isfile(SENTINEL_BINARY):
+        print("sentinelctl binary is missing - exiting")
+        return None
+
+    cmd = [SENTINEL_BINARY, 'status', '--filters', s1_filter]
+    try:
         sp = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = sp.communicate()
+        
         if sp.returncode != 0:
-            print(("Error trying to execute status with filter %s: %s" % (s1_filter, err)))
-            sys.exit(1)
-        else:
-            # Strip out the line containing the filter name, then map to dict. Skip last line
-            # as sentinelctl currently puts a blank newline at the end which breaks the map.
-            out = str(''.join(out.decode('UTF-8').splitlines(True)[1:]))
-            return dict([list(map(str.strip, s.split(':', 1))) for s in out.split('\n')[:-1]])
-    else:
-        print("sentinelctl binary is missing - exiting")
-        sys.exit(1)
+            print(f"Error trying to execute status with filter {s1_filter}: {err}")
+            return None
+            
+        # Strip out the line containing the filter name
+        output_lines = out.decode('UTF-8').splitlines(True)[1:]
+        output = ''.join(output_lines)
+        
+        # Parse the output into a dictionary
+        result = parse_status_output(output)
+        return result
+        
+    except subprocess.SubprocessError as e:
+        print(f"Failed to execute sentinelctl: {e}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error processing sentinelctl output: {e}")
+        return None
 
+def parse_last_seen(timestamp: str) -> str:
+    '''Convert Last Seen timestamp to Unix timestamp
+    
+    Args:
+        timestamp: Timestamp string from sentinelctl
+        
+    Returns:
+        Unix timestamp as string
+    '''
+    try:
+        # Try different date formats
+        formats = [
+            '%m/%d/%y, %I:%M:%S %p',  # Format from SentinelOne output (e.g. "3/18/25, 5:25:02 PM")
+            '%Y-%m-%d %H:%M:%S',
+            '%Y-%m-%d %H:%M:%S %Z',
+            '%Y-%m-%d %H:%M:%S.%f',
+            '%Y-%m-%d %H:%M:%S.%f %Z'
+        ]
+        
+        for fmt in formats:
+            try:
+                # Clean up the timestamp string
+                timestamp = timestamp.strip()
+                dt = datetime.strptime(timestamp, fmt)
+                unix_time = str(int(dt.timestamp()))
+                return unix_time
+            except ValueError:
+                continue
+                
+        return ''
+        
+    except Exception as e:
+        print(f"Error parsing timestamp: {e}")
+        return ''
 
 def main():
     """Main"""
-
     agent_data = get_status_data("Agent")
     mgmt_data = get_status_data("Management")
+    
+    if not agent_data or not mgmt_data:
+        sys.exit(1)
 
     # Build results dict that is compatible with the existing model
-    result = {}
-    # Translate bool values
-    if "yes" in agent_data['Infected']:
-        result.update({'active-threats-present': "1"})
-    else:
-        result.update({'active-threats-present': "0"})
-    if "yes" in agent_data['Ready']:
-        result.update({'agent-running': "1"})
-    else:
-        result.update({'agent-running': "0"})
-    if "started" in agent_data['ES Framework']:
-        result.update({'enforcing-security': "1"})
-    else:
-        result.update({'enforcing-security': "0"})
-    if "enabled" in agent_data['Protection']:
-        result.update({'self-protection-enabled': "1"})
-    else:
-        result.update({'self-protection-enabled': "0"})
-
-    # Rest of values can be sent relatively cleanly
-    result.update({'agent-version': agent_data['Version']})
-    result.update({'agent-id': agent_data['ID']})
-    # result.update({'last-seen': dp.parse(mgmt_data['Last Seen']).strftime('%s')}) # dateutil not in munki-python
-    result.update({'mgmt-url': mgmt_data['Server']})
+    result = {
+        # Legacy boolean fields (convert to 0/1)
+        'active-threats-present': "1" if agent_data['Infected'].lower() == 'yes' else "0",
+        'agent-running': "1" if agent_data['Ready'].lower() == 'yes' else "0",
+        'enforcing-security': "1" if agent_data['ES Framework'].lower() == 'started' else "0",
+        'self-protection-enabled': "1" if agent_data['Protection'].lower() == 'enabled' else "0",
+        
+        # Text fields (keep original values)
+        'agent-version': agent_data['Version'],
+        'agent-id': agent_data['ID'],
+        'mgmt-url': mgmt_data['Server'],
+        'agent-operational-state': agent_data['Agent Operational State'],
+        'remote-profiler': agent_data['Remote Profiler'],
+        'network-monitoring': agent_data['Agent Network Monitoring'],
+        'network-extension': agent_data['Network Extension'],
+        'content-filter': agent_data['Network Extension Content Filter'],
+        'network-quarantine': agent_data['Network Quarantine'],
+        'compatible-os': agent_data['Compatible OS'],
+        'site-key': mgmt_data['Site Key'],
+        'connected': mgmt_data['Connected']
+    }
+    
+    # Process Last Seen timestamp if available
+    if 'Last Seen' in mgmt_data:
+        result['last-seen'] = parse_last_seen(mgmt_data['Last Seen'])
+        
+    # Process Agent Install Time if available
+    if 'Install Date' in agent_data:
+        result['agent-install-time'] = parse_last_seen(agent_data['Install Date'])
 
     # Write results of checks to cache file
-    cachedir = '%s/cache' % os.path.dirname(os.path.realpath(__file__))
-
-    output_plist = os.path.join(cachedir, 'sentinelone.plist')
-    FoundationPlist.writePlist(result, output_plist)
+    cachedir = os.path.join(os.path.dirname(os.path.realpath(__file__)), CACHE_SUBPATH)
+    output_plist = os.path.join(cachedir, OUTPUT_FILENAME)
+    
+    try:
+        FoundationPlist.writePlist(result, output_plist)
+    except Exception as e:
+        print(f"Failed to write plist file: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

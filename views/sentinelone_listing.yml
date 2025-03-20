@@ -11,19 +11,19 @@ table:
     i18n_header: username
   - column: sentinelone.agent_running
     i18n_header: sentinelone.agent_running
-    formatter: binaryYesNo
+    formatter: format_sentinelone_agent_running
     filter: agent_running
   - column: sentinelone.active_threats_present
     i18n_header: sentinelone.active_threats
-    formatter: binaryYesNo
+    formatter: format_sentinelone_active_threats
     filter: active_threats
   - column: sentinelone.self_protection_enabled
     i18n_header: sentinelone.self_protection_enabled
-    formatter: binaryYesNo
+    formatter: format_sentinelone_self_protection
     filter: self_protection_enabled
   - column: sentinelone.enforcing_security
     i18n_header: sentinelone.enforcing_security
-    formatter: binaryYesNo
+    formatter: format_sentinelone_enforcing_security
     filter: enforcing_security
   - column: sentinelone.agent_version
     i18n_header: sentinelone.agent_version
