@@ -126,24 +126,24 @@ def main():
     # Build results dict that is compatible with the existing model
     result = {
         # Legacy boolean fields (convert to 0/1)
-        'active-threats-present': "1" if agent_data['Infected'].lower() == 'yes' else "0",
-        'agent-running': "1" if agent_data['Ready'].lower() == 'yes' else "0",
-        'enforcing-security': "1" if agent_data['ES Framework'].lower() == 'started' else "0",
-        'self-protection-enabled': "1" if agent_data['Protection'].lower() == 'enabled' else "0",
+        'active-threats-present': "1" if agent_data.get('Infected', '').lower() == 'yes' else "0",
+        'agent-running': "1" if agent_data.get('Ready', '').lower() == 'yes' else "0",
+        'enforcing-security': "1" if agent_data.get('ES Framework', '').lower() == 'started' else "0",
+        'self-protection-enabled': "1" if agent_data.get('Protection', '').lower() == 'enabled' else "0",
         
         # Text fields (keep original values)
-        'agent-version': agent_data['Version'],
-        'agent-id': agent_data['ID'],
-        'mgmt-url': mgmt_data['Server'],
-        'agent-operational-state': agent_data['Agent Operational State'],
-        'remote-profiler': agent_data['Remote Profiler'],
-        'network-monitoring': agent_data['Agent Network Monitoring'],
-        'network-extension': agent_data['Network Extension'],
-        'content-filter': agent_data['Network Extension Content Filter'],
-        'network-quarantine': agent_data['Network Quarantine'],
-        'compatible-os': agent_data['Compatible OS'],
-        'site-key': mgmt_data['Site Key'],
-        'connected': mgmt_data['Connected']
+        'agent-version': agent_data.get('Version', ''),
+        'agent-id': agent_data.get('ID', ''),
+        'mgmt-url': mgmt_data.get('Server', ''),
+        'agent-operational-state': agent_data.get('Agent Operational State', ''),
+        'remote-profiler': agent_data.get('Remote Profiler', ''),
+        'network-monitoring': agent_data.get('Agent Network Monitoring', ''),
+        'network-extension': agent_data.get('Network Extension', ''),
+        'content-filter': agent_data.get('Network Extension Content Filter', ''),
+        'network-quarantine': agent_data.get('Network Quarantine', ''),
+        'compatible-os': agent_data.get('Compatible OS', ''),
+        'site-key': mgmt_data.get('Site Key', ''),
+        'connected': mgmt_data.get('Connected', '')
     }
     
     # Process Last Seen timestamp if available
